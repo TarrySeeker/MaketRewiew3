@@ -1,21 +1,40 @@
 import { createClient } from "@/utils/supabase/server";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Package, FolderTree, ShoppingBag, TrendingUp } from "lucide-react";
+import { mockCategories, mockProducts } from "@/lib/mockData";
 
 export default async function AdminDashboard() {
   const supabase = await createClient();
 
-  const [
-    { count: productsCount },
-    { count: categoriesCount },
-    { count: ordersCount },
-    { data: recentOrders },
-  ] = await Promise.all([
-    supabase.from("products").select("*", { count: "exact", head: true }),
-    supabase.from("categories").select("*", { count: "exact", head: true }),
-    supabase.from("orders").select("*", { count: "exact", head: true }),
-    supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(5),
-  ]);
+  let productsCount = 0;
+  let categoriesCount = 0;
+  let ordersCount = 0;
+  let recentOrders: any[] | null = [];
+
+  try {
+    const [
+      productsResponse,
+      categoriesResponse,
+      ordersResponse,
+      recentOrdersResponse,
+    ] = await Promise.all([
+      supabase.from("products").select("*", { count: "exact", head: true }),
+      supabase.from("categories").select("*", { count: "exact", head: true }),
+      supabase.from("orders").select("*", { count: "exact", head: true }),
+      supabase.from("orders").select("*").order("created_at", { ascending: false }).limit(5),
+    ]);
+
+    productsCount = productsResponse.count || mockProducts.length;
+    categoriesCount = categoriesResponse.count || mockCategories.length;
+    ordersCount = ordersResponse.count || 0;
+    recentOrders = recentOrdersResponse.data || [];
+  } catch (error) {
+    console.error("Supabase Error, using Mock Data:", error);
+    productsCount = mockProducts.length;
+    categoriesCount = mockCategories.length;
+    ordersCount = 0;
+    recentOrders = [];
+  }
 
   const stats = [
     {

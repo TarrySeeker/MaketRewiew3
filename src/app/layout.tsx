@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { Inter, Space_Grotesk } from "next/font/google";
+import { Oswald, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 
-const inter = Inter({
+const jetbrainsMono = JetBrains_Mono({
   subsets: ["latin", "cyrillic"],
-  variable: "--font-sans",
+  variable: "--font-jetbrains",
 });
 
-const spaceGrotesk = Space_Grotesk({
-  subsets: ["latin"],
-  variable: "--font-display",
+const oswald = Oswald({
+  subsets: ["latin", "cyrillic"],
+  variable: "--font-oswald",
 });
 
 export const metadata: Metadata = {
@@ -19,6 +19,7 @@ export const metadata: Metadata = {
 
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
+import { LenisProvider } from "@/components/providers/LenisProvider";
 
 export default function RootLayout({
   children,
@@ -27,10 +28,12 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ru">
-      <body className={`${inter.variable} ${spaceGrotesk.variable} font-sans min-h-screen flex flex-col`}>
-        <Header />
-        <main className="flex-1">{children}</main>
-        <Footer />
+      <body className={`${jetbrainsMono.variable} ${oswald.variable} font-sans min-h-screen flex flex-col bg-background text-foreground`}>
+        <LenisProvider>
+          <Header />
+          <main className="flex-1 min-h-screen pt-[72px] md:pt-[88px]">{children}</main>
+          <Footer />
+        </LenisProvider>
       </body>
     </html>
   );
