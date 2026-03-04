@@ -12,13 +12,15 @@ import {
   Zap
 } from "lucide-react";
 
+import Image from "next/image";
+
 const categories = [
-  { name: "Электроинструмент", icon: Zap, slug: "elektroinstrument", color: "text-primary" },
-  { name: "Ручной инструмент", icon: Hammer, slug: "ruchnoy-instrument", color: "text-foreground" },
-  { name: "Расходные материалы", icon: SeparatorVertical, slug: "raskhodnye", color: "text-muted-foreground" },
-  { name: "Измерительный инструмент", icon: Ruler, slug: "izmeritelnyy", color: "text-primary" },
-  { name: "Садовая техника", icon: Wrench, slug: "sadovaya-tekhnika", color: "text-foreground" },
-  { name: "Спецодежда", icon: Drill, slug: "spetsodezhda", color: "text-muted-foreground" },
+  { name: "Электроинструмент", icon: Zap, slug: "power-tools", color: "text-primary", image: "/images/tools/drill.png" },
+  { name: "Ручной инструмент", icon: Hammer, slug: "hand-tools", color: "text-foreground", image: "/images/tools/hammer.png" },
+  { name: "Расходные материалы", icon: SeparatorVertical, slug: "accessories", color: "text-muted-foreground", image: "/images/tools/accessories.png" },
+  { name: "Измерительный инструмент", icon: Ruler, slug: "measuring-tools", color: "text-primary", image: "/images/tools/ruler.png" },
+  { name: "Садовая техника", icon: Wrench, slug: "sadovaya-tekhnika", color: "text-foreground", image: "/images/tools/drill.png" },
+  { name: "Спецодежда", icon: Drill, slug: "spetsodezhda", color: "text-muted-foreground", image: "/images/tools/accessories.png" },
 ];
 
 const advantages = [
@@ -51,13 +53,21 @@ export default function HomePage() {
             const Icon = cat.icon;
             return (
               <Link key={cat.slug} href={`/catalog/${cat.slug}`}>
-                <Card className="glass border-2 border-zinc-200 hover:border-zinc-900 hover:shadow-brutal transition-all duration-300 cursor-pointer h-full bg-white group rounded-none">
-                  <CardContent className="p-8 flex flex-col items-center text-center gap-6 relative overflow-hidden">
-                    <div className="absolute inset-0 bg-zinc-50 translate-y-[100%] group-hover:translate-y-0 transition-transform duration-300 ease-in-out"></div>
-                    <div className="p-4 border-2 border-zinc-100 bg-white group-hover:border-primary group-hover:bg-primary/10 transition-colors z-10">
-                      <Icon className={`h-8 w-8 text-zinc-800 group-hover:text-primary transition-colors group-hover:scale-110`} />
+                <Card className="glass border-2 border-zinc-200 hover:border-zinc-900 hover:shadow-brutal transition-all duration-300 cursor-pointer h-full bg-white group rounded-none overflow-hidden flex flex-col">
+                  <div className="relative aspect-[4/3] w-full bg-zinc-100 overflow-hidden border-b-2 border-zinc-200 group-hover:border-zinc-900 transition-colors">
+                    <Image
+                      src={cat.image}
+                      alt={cat.name}
+                      fill
+                      className="object-cover transition-transform duration-700 group-hover:scale-110 grayscale group-hover:grayscale-0"
+                    />
+                    <div className="absolute inset-0 bg-zinc-900/10 group-hover:bg-transparent transition-colors z-10" />
+                    <div className="absolute top-4 left-4 p-2 bg-white border-2 border-zinc-900 z-20 group-hover:bg-primary transition-colors">
+                      <Icon className="h-5 w-5 text-zinc-900 group-hover:text-white transition-colors" />
                     </div>
-                    <span className="text-sm font-display font-bold uppercase tracking-widest text-zinc-600 group-hover:text-zinc-900 transition-colors z-10">{cat.name}</span>
+                  </div>
+                  <CardContent className="p-6 flex flex-col items-center justify-center flex-grow bg-white">
+                    <span className="text-sm md:text-base font-display font-bold uppercase tracking-widest text-zinc-900 text-center">{cat.name}</span>
                   </CardContent>
                 </Card>
               </Link>

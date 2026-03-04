@@ -45,12 +45,43 @@ export const mockCategories: Category[] = [
 
 const mockBrands = ["BOSCH", "MAKITA", "DEWALT", "MILWAUKEE", "HILTI", "ZUBR"];
 
+const categoryImagePools: Record<string, string[]> = {
+    "power-tools": [
+        "/images/tools/drill.png",
+        "/images/tools/drill.png",
+        "/images/tools/drill.png",
+        "/images/tools/drill.png",
+    ],
+    "hand-tools": [
+        "/images/tools/hammer.png",
+        "/images/tools/hammer.png",
+        "/images/tools/hammer.png",
+        "/images/tools/hammer.png",
+    ],
+    "measuring-tools": [
+        "/images/tools/ruler.png",
+        "/images/tools/ruler.png",
+        "/images/tools/ruler.png",
+        "/images/tools/ruler.png",
+    ],
+    "accessories": [
+        "/images/tools/accessories.png",
+        "/images/tools/accessories.png",
+        "/images/tools/accessories.png",
+        "/images/tools/accessories.png",
+    ]
+};
+
 export const mockProducts: Product[] = mockCategories.flatMap((category) => {
     return Array.from({ length: 10 }).map((_, index) => {
         const id = `prod-${category.id}-${index + 1}`;
         const brand = mockBrands[index % mockBrands.length];
         const price = Math.floor(Math.random() * 20000) + 2000;
         const isDiscounted = Math.random() > 0.7;
+
+        const imagePool = categoryImagePools[category.slug] || categoryImagePools["hand-tools"];
+        const primaryImage = imagePool[index % imagePool.length];
+        const secondaryImage = imagePool[(index + 1) % imagePool.length];
 
         return {
             id,
@@ -63,10 +94,7 @@ export const mockProducts: Product[] = mockCategories.flatMap((category) => {
             price,
             old_price: isDiscounted ? price + Math.floor(price * 0.2) : null,
             description: `Высокопроизводительный ${category.name.toLowerCase()} для профессионального использования. Оснащен передовыми системами защиты и увеличенным ресурсом работы. Промышленный стандарт качества.`,
-            images: [
-                `https://images.unsplash.com/photo-1572981779307-38b8cabb2407?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`,
-                `https://images.unsplash.com/photo-1530124566582-a618bc2615dc?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80`
-            ],
+            images: [primaryImage, secondaryImage],
             category_id: category.id,
             weight: parseFloat((Math.random() * 5 + 1).toFixed(1)),
             dimensions: {

@@ -1,7 +1,7 @@
 "use client";
 
 import { Canvas } from "@react-three/fiber";
-import { Environment, ContactShadows } from "@react-three/drei";
+import { ContactShadows } from "@react-three/drei";
 import { Suspense } from "react";
 import { TechnicalCore } from "./TechnicalCore";
 
@@ -14,14 +14,13 @@ export function ScrollytellingScene() {
                 gl={{ antialias: true, alpha: false }}
             >
                 <color attach="background" args={["#f4f4f5"]} />
-                <ambientLight intensity={0.5} />
-                <spotLight position={[10, 10, 10]} penumbra={1} intensity={2} color="#FF4500" />
-                <pointLight position={[-10, -10, -10]} intensity={1} color="#ffffff" />
+                <ambientLight intensity={1.5} />
+                <spotLight position={[10, 10, 10]} penumbra={1} intensity={3} color="#FF4500" />
+                <pointLight position={[-10, -10, -10]} intensity={2} color="#ffffff" />
+                <directionalLight position={[0, 10, 5]} intensity={2} />
 
                 <Suspense fallback={null}>
                     <TechnicalCore />
-                    {/* Environment map matches industrial/studio feel */}
-                    <Environment preset="studio" />
                     <ContactShadows position={[0, -2.5, 0]} opacity={0.5} scale={20} blur={2.5} far={4.5} />
                 </Suspense>
             </Canvas>

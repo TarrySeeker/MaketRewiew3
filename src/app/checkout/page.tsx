@@ -5,25 +5,14 @@ import { useCart } from "@/store/cart";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
+import { CdekWidget } from "@/components/checkout/CdekWidget";
 
-interface DeliveryPoint {
-  code: string;
-  name: string;
-  location: {
-    city: string;
-    address: string;
-    address_full: string;
-  };
-  work_time: string;
-}
-
-interface Tariff {
-  tariff_code: number;
-  tariff_name: string;
-  delivery_sum: number;
-  period_min: number;
-  period_max: number;
+interface SelectedDelivery {
+  pointCode: string;
+  tariffCode: number;
+  deliverySum: number;
+  address: string;
+  time: string;
 }
 
 export default function CheckoutPage() {
@@ -36,13 +25,9 @@ export default function CheckoutPage() {
     name: "",
     phone: "",
     email: "",
-    city: "",
   });
 
-  const [deliveryPoints, setDeliveryPoints] = useState<DeliveryPoint[]>([]);
-  const [selectedPoint, setSelectedPoint] = useState<DeliveryPoint | null>(null);
-  const [tariffs, setTariffs] = useState<Tariff[]>([]);
-  const [selectedTariff, setSelectedTariff] = useState<Tariff | null>(null);
+  const [deliveryData, setDeliveryData] = useState<SelectedDelivery | null>(null);
 
   useEffect(() => {
     if (items.length === 0) {
@@ -50,120 +35,27 @@ export default function CheckoutPage() {
     }
   }, [items, router]);
 
-  const handleCityChange = async (city: string) => {
-    setFormData({ ...formData, city });
-    setSelectedPoint(null);
-    setSelectedTariff(null);
-    
-    if (city.length < 3) {
-      setDeliveryPoints([]);
-      setTariffs([]);
-      return;
-    }
-
-    setCalculatingDelivery(true);
-
-    try {
-      // Рассчитываем тарифы
-      const totalWeight = items.reduce(
-        (sum, item) => sum + (item.product.weight || 500) * item.quantity,
-        0
-      );
-
-      const tariffsRes = await fetch("/api/cdek/calculate", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          city,
-          weight: totalWeight,
-          packages: [
-            {
-              weight: totalWeight,
-              length: 30,
-              width: 20,
-              height: 10,
-            },
-          ],
-        }),
-      });
-
-      const tariffsData = await tariffsRes.json();
-      setTariffs(tariffsData.tariffs || []);
-
-      // Загружаем ПВЗ (для примера без city_code, можно добавить справочник городов)
-      const pointsRes = await fetch(`/api/cdek/points?postal_code=`);
-      const pointsData = await pointsRes.json();
-      
-      // Фильтруем по городу из введённых данных
-      const filtered = (pointsData.points || []).filter((p: DeliveryPoint) =>
-        p.location.city.toLowerCase().includes(city.toLowerCase())
-      );
-      setDeliveryPoints(filtered.slice(0, 20)); // первые 20
-    } catch (error) {
-      console.error("Delivery calc error:", error);
-    } finally {
-      setCalculatingDelivery(false);
-    }
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!selectedPoint) {
-      alert("Выберите пункт выдачи СДЭК");
+    if (!deliveryData) {
+      alert("Пожалуйста, выберите пункт выдачи СДЭК на карте.");
       return;
     }
 
-    if (!selectedTariff) {
-      alert("Выберите тариф доставки");
-      return;
+    // Сохраняем данные для платежной страницы
+    const checkoutData = {
+      customer: formData,
+      delivery: deliveryData,
+      total: getTotal() + deliveryData.deliverySum,
+    };
+
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("checkoutData", JSON.stringify(checkoutData));
     }
 
-    setLoading(true);
-
-    try {
-      const supabase = createClient();
-
-      // Создаём заказ в Supabase
-      const { data: order, error } = await supabase
-        .from("orders")
-        .insert({
-          customer_info: {
-            name: formData.name,
-            phone: formData.phone,
-            email: formData.email,
-            city: formData.city,
-            address: selectedPoint.location.address_full,
-          },
-          items: items.map((item) => ({
-            product_id: item.product.id,
-            title: item.product.title,
-            price: item.product.price,
-            quantity: item.quantity,
-          })),
-          total: getTotal() + selectedTariff.delivery_sum,
-          delivery_info: {
-            cdek_point_code: selectedPoint.code,
-            cdek_tariff_code: selectedTariff.tariff_code,
-            delivery_sum: selectedTariff.delivery_sum,
-            delivery_period: `${selectedTariff.period_min}-${selectedTariff.period_max} дней`,
-          },
-          status: "new",
-        })
-        .select()
-        .single();
-
-      if (error) throw error;
-
-      clearCart();
-      alert(`Заказ #${order.id.slice(0, 8)} успешно оформлен!\n\nМы свяжемся с вами в ближайшее время.`);
-      router.push("/");
-    } catch (error: any) {
-      console.error("Order creation error:", error);
-      alert("Ошибка при создании заказа: " + error.message);
-    } finally {
-      setLoading(false);
-    }
+    // Редирект на моковую страницу оплаты
+    router.push("/payment");
   };
 
   if (items.length === 0) {
@@ -171,8 +63,10 @@ export default function CheckoutPage() {
   }
 
   const subtotal = getTotal();
-  const deliveryCost = selectedTariff?.delivery_sum || 0;
+  const deliveryCost = deliveryData?.deliverySum || 0;
   const total = subtotal + deliveryCost;
+
+  const totalWeight = items.reduce((sum, item) => sum + (item.product.weight || 500) * item.quantity, 0);
 
   return (
     <div className="container mx-auto px-4 py-8">
@@ -220,98 +114,27 @@ export default function CheckoutPage() {
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                   />
                 </div>
-
-                <div>
-                  <label className="block text-sm font-medium mb-2">Город *</label>
-                  <input
-                    type="text"
-                    required
-                    className="w-full px-4 py-2 border rounded bg-background"
-                    value={formData.city}
-                    onChange={(e) => handleCityChange(e.target.value)}
-                    placeholder="Начните вводить название города..."
-                  />
-                  {calculatingDelivery && (
-                    <p className="text-sm text-muted-foreground mt-1">
-                      Рассчитываем доставку...
-                    </p>
-                  )}
-                </div>
               </CardContent>
             </Card>
 
-            {/* Тарифы доставки */}
-            {tariffs.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Выберите способ доставки</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3">
-                  {tariffs.map((tariff) => (
-                    <label
-                      key={tariff.tariff_code}
-                      className={`flex items-center justify-between p-4 border rounded cursor-pointer transition ${
-                        selectedTariff?.tariff_code === tariff.tariff_code
-                          ? "border-primary bg-primary/5"
-                          : "hover:border-primary/50"
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        <input
-                          type="radio"
-                          name="tariff"
-                          checked={selectedTariff?.tariff_code === tariff.tariff_code}
-                          onChange={() => setSelectedTariff(tariff)}
-                        />
-                        <div>
-                          <p className="font-medium">{tariff.tariff_name}</p>
-                          <p className="text-sm text-muted-foreground">
-                            {tariff.period_min}-{tariff.period_max} дней
-                          </p>
-                        </div>
-                      </div>
-                      <span className="font-semibold">{tariff.delivery_sum.toLocaleString()} ₽</span>
-                    </label>
-                  ))}
-                </CardContent>
-              </Card>
-            )}
+            {/* CDEK Widget */}
+            <Card className="border-2 border-zinc-900 shadow-brutal rounded-none bg-zinc-50 overflow-hidden">
+              <CardHeader className="border-b-2 border-zinc-900 bg-zinc-100">
+                <CardTitle className="font-display uppercase tracking-widest text-zinc-900">Выберите пункт выдачи СДЭК *</CardTitle>
+              </CardHeader>
+              <CardContent className="p-0">
+                <CdekWidget onSelect={(data) => setDeliveryData(data)} weight={totalWeight} />
+              </CardContent>
+            </Card>
 
-            {/* Пункты выдачи */}
-            {deliveryPoints.length > 0 && (
-              <Card>
-                <CardHeader>
-                  <CardTitle>Выберите пункт выдачи СДЭК</CardTitle>
-                </CardHeader>
-                <CardContent className="space-y-3 max-h-96 overflow-y-auto">
-                  {deliveryPoints.map((point) => (
-                    <label
-                      key={point.code}
-                      className={`block p-4 border rounded cursor-pointer transition ${
-                        selectedPoint?.code === point.code
-                          ? "border-primary bg-primary/5"
-                          : "hover:border-primary/50"
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <input
-                          type="radio"
-                          name="point"
-                          checked={selectedPoint?.code === point.code}
-                          onChange={() => setSelectedPoint(point)}
-                        />
-                        <div className="flex-1">
-                          <p className="font-medium mb-1">{point.name}</p>
-                          <p className="text-sm text-muted-foreground mb-1">
-                            {point.location.address_full}
-                          </p>
-                          <p className="text-xs text-muted-foreground">
-                            {point.work_time}
-                          </p>
-                        </div>
-                      </div>
-                    </label>
-                  ))}
+            {/* Выбранный пункт выдачи */}
+            {deliveryData && (
+              <Card className="border-2 border-primary shadow-brutal rounded-none bg-primary/5">
+                <CardContent className="p-6">
+                  <h3 className="font-display font-bold text-lg mb-2 uppercase text-primary">Выбранный ПВЗ:</h3>
+                  <p className="font-mono text-zinc-900 font-bold">{deliveryData.address}</p>
+                  <p className="text-sm text-zinc-600 font-mono mt-2">Код: {deliveryData.pointCode}</p>
+                  <p className="text-sm text-zinc-600 font-mono">Срок доставки: {deliveryData.time}</p>
                 </CardContent>
               </Card>
             )}
@@ -340,20 +163,20 @@ export default function CheckoutPage() {
                     <span className="text-muted-foreground">Товары:</span>
                     <span>{subtotal.toLocaleString()} ₽</span>
                   </div>
-                  <div className="flex justify-between text-sm">
-                    <span className="text-muted-foreground">Доставка:</span>
+                  <div className="flex justify-between text-sm font-mono text-zinc-600">
+                    <span>Доставка:</span>
                     <span>
-                      {selectedTariff
+                      {deliveryData
                         ? `${deliveryCost.toLocaleString()} ₽`
-                        : "Рассчитается"}
+                        : "Выберите на карте"}
                     </span>
                   </div>
                 </div>
 
-                <div className="border-t pt-4">
-                  <div className="flex justify-between items-baseline">
-                    <span className="font-semibold text-lg">Итого:</span>
-                    <span className="font-bold text-2xl">
+                <div className="border-t-2 border-zinc-900 pt-4">
+                  <div className="flex justify-between items-baseline text-zinc-900">
+                    <span className="font-display font-bold uppercase tracking-widest">Итого:</span>
+                    <span className="font-mono font-bold text-2xl">
                       {total.toLocaleString()} ₽
                     </span>
                   </div>
@@ -363,14 +186,14 @@ export default function CheckoutPage() {
                   type="submit"
                   size="lg"
                   className="w-full"
-                  disabled={loading || !selectedPoint || !selectedTariff}
+                  disabled={!deliveryData}
                 >
-                  {loading ? "Оформляем..." : "Подтвердить заказ"}
+                  Перейти к оплате
                 </Button>
 
-                {!selectedTariff && formData.city && (
-                  <p className="text-xs text-center text-muted-foreground">
-                    Выберите способ доставки
+                {!deliveryData && (
+                  <p className="text-xs font-mono text-center text-primary font-bold mt-4 uppercase">
+                    Выберите пункт выдачи на карте
                   </p>
                 )}
               </CardContent>

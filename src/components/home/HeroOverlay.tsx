@@ -26,7 +26,7 @@ export function HeroOverlay() {
 
                     <h1 className="font-display text-4xl sm:text-5xl md:text-7xl lg:text-8xl font-black mb-4 md:mb-6 tracking-tighter text-primary leading-none uppercase break-words">
                         АБСОЛЮТНЫЙ <br className="hidden sm:block" />
-                        <span className="text-zinc-900 underline decoration-8 underline-offset-8">
+                        <span className="underline decoration-4 md:decoration-8 underline-offset-4 md:underline-offset-8 inline-block mb-1 md:mb-0">
                             КОНТРОЛЬ
                         </span><br />
                         НАД МАТЕРИАЛОМ
