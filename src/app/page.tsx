@@ -40,13 +40,13 @@ export default function HomePage() {
       {/* Categories (Brutalist Grid) */}
       <section className="relative z-10 container mx-auto px-4 py-24 mt-32">
         <div className="mb-16 border-b-4 border-zinc-900 pb-4 flex items-end justify-between">
-          <h2 className="font-display text-5xl md:text-6xl font-black uppercase tracking-widest text-zinc-900 leading-none">
+          <h2 className="font-display text-4xl sm:text-5xl md:text-6xl font-black uppercase tracking-widest text-zinc-900 leading-none">
             АРСЕНАЛ
           </h2>
           <div className="hidden md:block text-zinc-500 font-mono text-sm">СЕКТОР: КАТАЛОГ</div>
         </div>
 
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-6">
           {categories.map((cat) => {
             const Icon = cat.icon;
             return (
@@ -85,14 +85,14 @@ export default function HomePage() {
       <section className="relative z-10 container mx-auto px-4 text-center pb-32">
         <div className="max-w-4xl mx-auto bg-zinc-900 p-16 border-4 border-primary shadow-brutal relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-2 bg-blueprint opacity-20"></div>
-          <h2 className="font-display text-5xl md:text-6xl font-black mb-8 text-white uppercase tracking-widest relative z-10">
+          <h2 className="font-display text-3xl sm:text-5xl md:text-6xl font-black mb-6 md:mb-8 text-white uppercase tracking-widest relative z-10">
             НЕТ НУЖНОЙ ДЕТАЛИ?
           </h2>
-          <p className="text-zinc-400 mb-12 text-xl font-mono relative z-10">
+          <p className="text-zinc-400 mb-8 md:mb-12 text-base md:text-xl font-mono relative z-10">
             Прямая связь с инженерным отделом. Подберем кастомное решение или нужный расходник для ваших задач.
           </p>
           <Link href="/contacts" className="relative z-10">
-            <Button variant="outline" size="lg" className="h-16 px-12 text-xl bg-primary text-white border-2 border-primary rounded-none hover:bg-white hover:text-black hover:border-white uppercase tracking-widest font-display transition-all shadow-brutal hover:shadow-none hover:translate-y-1">
+            <Button variant="outline" size="lg" className="h-14 sm:h-16 px-6 sm:px-12 text-base sm:text-xl bg-primary text-white border-2 border-primary rounded-none hover:bg-white hover:text-black hover:border-white uppercase tracking-widest font-display transition-all shadow-brutal hover:shadow-none hover:translate-y-1 w-full sm:w-auto">
               ИНИЦИИРОВАТЬ СВЯЗЬ
             </Button>
           </Link>

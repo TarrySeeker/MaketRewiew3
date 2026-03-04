@@ -35,12 +35,12 @@ export function Header() {
         : "bg-white py-4"
         }`}
     >
-      <div className="container mx-auto flex items-center justify-between px-4 gap-8">
-        <Link href="/" className="flex items-center gap-3 flex-shrink-0 group">
-          <div className="p-2 border-2 border-zinc-900 bg-zinc-100 group-hover:bg-primary transition-colors">
-            <Wrench className="h-5 w-5 text-zinc-900 group-hover:text-white transition-colors" />
+      <div className="container mx-auto flex items-center justify-between px-4 gap-4 sm:gap-8">
+        <Link href="/" className="flex items-center gap-2 sm:gap-3 flex-shrink-0 group">
+          <div className="p-1.5 sm:p-2 border-2 border-zinc-900 bg-zinc-100 group-hover:bg-primary transition-colors">
+            <Wrench className="h-4 w-4 sm:h-5 sm:w-5 text-zinc-900 group-hover:text-white transition-colors" />
           </div>
-          <span className="font-display text-2xl font-bold tracking-widest text-zinc-900 group-hover:text-primary transition-colors">ИНСТРУМЕНТ</span>
+          <span className="font-display text-lg sm:text-2xl font-bold tracking-wider sm:tracking-widest text-zinc-900 group-hover:text-primary transition-colors">ИНСТРУМЕНТ</span>
         </Link>
 
         {/* Search */}
