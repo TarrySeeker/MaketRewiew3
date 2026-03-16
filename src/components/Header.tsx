@@ -59,13 +59,13 @@ export function Header() {
 
         <nav className="hidden lg:flex items-center gap-8">
           <Link href="/catalog" className="text-sm font-sans font-bold uppercase tracking-widest text-zinc-600 hover:text-zinc-900 hover:underline decoration-primary decoration-2 underline-offset-8 transition-all">
-            Каталог
+            КАТАЛОГ
           </Link>
-          <Link href="/about" className="text-sm font-sans font-bold uppercase tracking-widest text-zinc-600 hover:text-zinc-900 transition-all">
-            Лаборатория
+          <Link href="/about" className="text-sm font-sans font-bold uppercase tracking-widest text-zinc-600 hover:text-zinc-900 hover:underline decoration-primary decoration-2 underline-offset-8 transition-all">
+            О компании
           </Link>
-          <Link href="/contacts" className="text-sm font-sans font-bold uppercase tracking-widest text-zinc-600 hover:text-zinc-900 transition-all">
-            Связь
+          <Link href="/contacts" className="text-sm font-sans font-bold uppercase tracking-widest text-zinc-600 hover:text-zinc-900 hover:underline decoration-primary decoration-2 underline-offset-8 transition-all">
+            Контакты
           </Link>
         </nav>
 

@@ -33,6 +33,13 @@ export interface Product {
   seo_title: string | null;
   seo_description: string | null;
   is_active: boolean;
+  power?: string | null;
+  voltage?: string | null;
+  material?: string | null;
+  country?: string | null;
+  warranty?: string | null;
+  purpose?: string | null;
+  inStock?: boolean;
 }
 
 export interface Order {

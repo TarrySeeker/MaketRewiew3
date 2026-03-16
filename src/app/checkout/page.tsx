@@ -99,8 +99,21 @@ export default function CheckoutPage() {
                     required
                     className="w-full px-4 py-2 border rounded bg-background"
                     value={formData.phone}
-                    onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                    placeholder="+7 (XXX) XXX-XX-XX"
+                    onChange={(e) => {
+                      let val = e.target.value.replace(/\D/g, '');
+                      if (val.startsWith('8')) val = '7' + val.slice(1);
+                      if (val.startsWith('7')) val = val.slice(0, 11);
+                      else val = val.slice(0, 10);
+                      let formatted = '';
+                      if (val.length > 0) formatted = '+7';
+                      if (val.length > 1) formatted += ' (' + val.slice(1, 4);
+                      if (val.length > 4) formatted += ') ' + val.slice(4, 7);
+                      if (val.length > 7) formatted += '-' + val.slice(7, 9);
+                      if (val.length > 9) formatted += '-' + val.slice(9, 11);
+                      if (val.length === 1) formatted = '+7';
+                      setFormData({ ...formData, phone: formatted });
+                    }}
+                    placeholder="+7 (___) ___-__-__"
                   />
                 </div>
 

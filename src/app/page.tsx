@@ -25,7 +25,7 @@ const categories = [
 
 const advantages = [
   { title: "Бесплатная доставка", description: "От 5000 ₽ по России с трекингом на каждом этапе" },
-  { title: "Индустриальное качество", description: "Официальная гарантия и тест-драйв до 30 дней" },
+  { title: "Высокое качество", description: "Официальная гарантия и тест-драйв до 30 дней" },
   { title: "Прямые контракты", description: "Оптовые поставки от заводов без наценок дистрибьюторов" },
   { title: "Молниеносная сборка", description: "Отгрузка со склада за 2 часа после подтверждения" },
 ];
@@ -96,14 +96,14 @@ export default function HomePage() {
         <div className="max-w-4xl mx-auto bg-zinc-900 p-16 border-4 border-primary shadow-brutal relative overflow-hidden">
           <div className="absolute top-0 left-0 w-full h-2 bg-blueprint opacity-20"></div>
           <h2 className="font-display text-3xl sm:text-5xl md:text-6xl font-black mb-6 md:mb-8 text-white uppercase tracking-widest relative z-10">
-            НЕТ НУЖНОЙ ДЕТАЛИ?
+            НЕТ НУЖНОГО ТОВАРА?
           </h2>
           <p className="text-zinc-400 mb-8 md:mb-12 text-base md:text-xl font-mono relative z-10">
             Прямая связь с инженерным отделом. Подберем кастомное решение или нужный расходник для ваших задач.
           </p>
           <Link href="/contacts" className="relative z-10">
             <Button variant="outline" size="lg" className="h-14 sm:h-16 px-6 sm:px-12 text-base sm:text-xl bg-primary text-white border-2 border-primary rounded-none hover:bg-white hover:text-black hover:border-white uppercase tracking-widest font-display transition-all shadow-brutal hover:shadow-none hover:translate-y-1 w-full sm:w-auto">
-              ИНИЦИИРОВАТЬ СВЯЗЬ
+              СВЯЗАТЬСЯ С НАМИ
             </Button>
           </Link>
         </div>

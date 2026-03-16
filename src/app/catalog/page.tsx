@@ -37,7 +37,7 @@ export default async function CatalogPage() {
                 </CardHeader>
                 <CardContent>
                   <p className="text-sm font-sans tracking-widest text-zinc-500 group-hover:text-primary transition-colors uppercase mt-4 flex items-center gap-2">
-                    Изучить арсенал <span className="text-primary group-hover:translate-x-2 transition-transform">→</span>
+                    Посмотреть <span className="text-primary group-hover:translate-x-2 transition-transform">→</span>
                   </p>
                 </CardContent>
               </Card>
